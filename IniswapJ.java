@@ -1,18 +1,23 @@
+import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.io.*;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 //import java.io.File;
@@ -29,12 +34,15 @@ public class IniswapJ extends JFrame {
 	JPanel mainPanel;
 	
 	static JTextArea ta1,ta2,ta3,ta4;
+	static DefaultListModel model, model1;
 	static JList jl1, jl2;
+	
+	
 	//Color bg = new Color();
 	
 	static ArrayList<String> inifile = new ArrayList<String>();
 	static ArrayList<String> inifacset = new ArrayList<String>();
-	static ArrayList<String[]> facsets = new ArrayList<String[]>();
+	static ArrayList<ArrayList<String>> facsets = new ArrayList<ArrayList<String>>();
 	
 	static Path dir1;
 	static File dir2,file1,file2;
@@ -45,28 +53,41 @@ public class IniswapJ extends JFrame {
 		checknewinstal();
 		readini();
 		filldata();
+		// testing
+		//System.out.println("facsets: "+ facsets.get(0).get(0));
 
 	}// end of main
 	
 	private static void checknewinstal(){
 		//test
 		//JOptionPane.showMessageDialog(null, "Test");
-		//PrintWriter out1;
-		
-		// check Iniswap3 existence
-		//dir1 = new File(new File(".").getAbsolutePath());
 		Path path;
 		try {
 			path = Paths.get(IniswapJ.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-			file1 = new File (path.toFile(),"Alpha Centauri.ini");
-			//JOptionPane.showMessageDialog(null, "file1: " + file1);
-			dir2 = new File(path.toFile(), "Iniswap3");
+			//JOptionPane.showMessageDialog(null, "path: "+path.toString());
+			StringBuilder str1 = new StringBuilder(path.toString());
+			// find path
+			int i = str1.length()-1;
+			char c = str1.charAt(i);
+			while (c != '\\' && str1.length() >0){
+				str1.deleteCharAt(i);
+				i--;
+				c = str1.charAt(i);
+			}
+			file1 = new File (str1.toString(),"Alpha Centauri.ini");
+			if(file1.length()==0){
+				JOptionPane.showMessageDialog(null, 
+						"Alpha Centauri.ini file does not exist, or is zero length."
+						+"\nIs jar file in the game folder?"
+						+"\nCheck game installation."
+						+"\nQuiting...");
+				System.exit(0);
+			}
+			dir2 = new File(str1.toString(), "Iniswap3");
 			dir2.mkdir();
-			//JOptionPane.showMessageDialog(null, dir2);
-//			if (dir2.exists() && dir2.isDirectory()) {
-//				JOptionPane.showMessageDialog(null, dir2);
-//			}
 			file2 = new File (dir2,"ini_factions_sets.txt");
+//			if(file2.length()==0)
+//				JOptionPane.showMessageDialog(null, "ini_factions_sets.txt = 0?");
 			try {
 				file2.createNewFile();
 			} catch (IOException e) {
@@ -75,13 +96,13 @@ public class IniswapJ extends JFrame {
 			}
 			
 			
-		} catch (URISyntaxException e1) {
+		} 
+		catch (URISyntaxException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 				
 		if (file2.length()==0){
-			//JOptionPane.showMessageDialog(null, "file length 0");
 			try{
 			PrintWriter out1
 			   = new PrintWriter(new BufferedWriter(new FileWriter(file2)));
@@ -118,8 +139,7 @@ public class IniswapJ extends JFrame {
 	 
 	private static void readini(){
 		try {
-			BufferedReader in1
-			   = new BufferedReader(new FileReader(file2));
+			BufferedReader in1 = new BufferedReader(new FileReader(file2));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -221,18 +241,21 @@ public class IniswapJ extends JFrame {
 		}// for inifile
 		// Creating sets of 7 factions:
 		
-		String[] str1 = new String[8];
+		//ArrayList<String> str1 = new ArrayList<String>();
 		String str2 = "";
 		String str3 = "";
 		//for ()
 //		for (int i = 0; i < inifacset.size(); i++) {
 //            System.out.println(inifacset.get(i));
 //        }
+		
 		// special while loop
 		int i = 1;
+		int i1 = 0;
 		//str2 = inifacset.get(i);
 		while (i<inifacset.size()-8){
 			//System.out.println("i=" + i + " "+"starting while");
+			facsets.add(new ArrayList<String>());
 			str2 = inifacset.get(i);
 //			System.out.println("str2: "+str2);
 //			str3 = STARS_IN_INI;
@@ -241,20 +264,23 @@ public class IniswapJ extends JFrame {
 				//System.out.println("i=" + i + " "+"yes, equal");
 				++i;
 				str2 = inifacset.get(i);
-				str1[0] = str2;
-				//System.out.println("i=" + i + " "+"0=" + " "+str2);
+				facsets.get(i1).add(str2);
 				for(int j=1;j<8;++j){				
 					str2 = inifacset.get(i+j);
-					str1[j] = str2;
-					//System.out.println("i=" + i + " "+"j=" + j + " "+str2);
+					facsets.get(i1).add(str2);
 				}
 			}
 			i+=8;
-			facsets.add(str1);
-		}
-		//System.out.println("i=" + i + " "+"end, while");
+			i1++;
+			
+		}//while
 			
 		// List box with faction sets
+		// actual faction sets 
+		for (int k=0;k<facsets.size();k++){
+			model.addElement(facsets.get(k).get(0));
+		}
+		//jl1.setVisibleRowCount(8);
 
 
 		
@@ -299,8 +325,29 @@ public class IniswapJ extends JFrame {
 		//ta3.setOpaque(false);
 		addcomponent(mainPanel, ta4, 2,1,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		
-		jl1 = new JList();
+		model = new DefaultListModel();
+		jl1 = new JList(model);
+		JScrollPane jscrl = new JScrollPane(jl1);
+		jscrl.setPreferredSize(new Dimension(200,120));
+		model.addElement(null);
+		// test 15 elements
+//		for (int i = 0; i < 15; i++)
+//		      model.addElement("Element " + i);
+		
+		jl1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		addcomponent(mainPanel, jscrl, 0,2,1,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 
+		model1 = new DefaultListModel();
+		jl2 = new JList(model1);
+		JScrollPane jscrl1 = new JScrollPane(jl2);
+		jscrl1.setPreferredSize(new Dimension(200,120));
+		model1.addElement(null);
+		// test 15 elements
+//		for (int i = 0; i < 15; i++)
+//		      model.addElement("Element " + i);
+		
+		jl2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		addcomponent(mainPanel, jscrl1, 2,2,1,4, GridBagConstraints.EAST, GridBagConstraints.NONE);
 		
 		this.add(mainPanel);
 //		p1.add(ta1);
