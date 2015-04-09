@@ -43,6 +43,7 @@ public class IniswapJ extends JFrame {
 	static ArrayList<String> inifile = new ArrayList<String>();
 	static ArrayList<String> inifacset = new ArrayList<String>();
 	static ArrayList<ArrayList<String>> facsets = new ArrayList<ArrayList<String>>();
+	static File[] exes;
 	
 	static Path dir1;
 	static File dir2,file1,file2;
@@ -67,19 +68,32 @@ public class IniswapJ extends JFrame {
 			//JOptionPane.showMessageDialog(null, "path: "+path.toString());
 			StringBuilder str1 = new StringBuilder(path.toString());
 			// find path
-			int i = str1.length()-1;
-			char c = str1.charAt(i);
-			while (c != '\\' && str1.length() >0){
-				str1.deleteCharAt(i);
-				i--;
-				c = str1.charAt(i);
+			
+			if (new File(str1.toString()).isDirectory() == false){
+				int i = str1.length()-1;
+				char c = str1.charAt(i);
+				while (c != '\\' && str1.length() >0){
+					str1.deleteCharAt(i);
+					i--;
+					c = str1.charAt(i);
+				}
 			}
+			// list of exe
+			try {
+				exes = new File(str1.toString()).listFiles();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			
+			// Alpha Centauri.ini
 			file1 = new File (str1.toString(),"Alpha Centauri.ini");
 			if(file1.length()==0){
 				JOptionPane.showMessageDialog(null, 
 						"Alpha Centauri.ini file does not exist, or is zero length."
 						+"\nIs jar file in the game folder?"
-						+"\nCheck game installation."
+						+"\nCheck SMACX installation or start the game to create ini file."
 						+"\nQuiting...");
 				System.exit(0);
 			}
@@ -281,6 +295,11 @@ public class IniswapJ extends JFrame {
 			model.addElement(facsets.get(k).get(0));
 		}
 		//jl1.setVisibleRowCount(8);
+		
+		// the right list of exe
+		for (File temp : exes ){
+			model1.addElement(temp.toString());
+		}
 
 
 		
