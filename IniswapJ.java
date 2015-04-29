@@ -1,4 +1,5 @@
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -8,6 +9,8 @@ import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -33,11 +36,23 @@ public class IniswapJ extends JFrame {
 	public static final String STARS_IN_INI = "********************";
 	JPanel mainPanel;
 	
-	static JTextArea ta1,ta2,ta3,ta4;
+	/**
+	 * Text areas
+	 * ta3 - initial faction set
+	 * ta4
+	 * ta5 - new set name
+	 */
+	static JTextArea ta1,ta2,ta3,ta4,ta5;
 	static DefaultListModel model, model1;
 	static JList jl1, jl2;
 	
+	static JButton butAddSet;
+	static JButton butPlay;
 	
+	// strings for launching
+	String sSet = "";
+	String sExe = "";
+	static String str1g = ""; //path to game folder
 	//Color bg = new Color();
 	
 	static ArrayList<String> inifile = new ArrayList<String>();
@@ -78,6 +93,12 @@ public class IniswapJ extends JFrame {
 					c = str1.charAt(i);
 				}
 			}
+			//JOptionPane.showMessageDialog(null, "str1-1: "+str1.toString());
+			int i = str1.length()-1;
+			char c = str1.charAt(i);
+			if(c != '\\') str1.append("\\");
+			str1g = str1.toString();
+			//JOptionPane.showMessageDialog(null, "str1g-2: "+str1g);
 			// list of exe
 			try {
 				exes = new File(str1.toString()).listFiles();
@@ -305,6 +326,16 @@ public class IniswapJ extends JFrame {
 		
 	}// end of private static void filldata()
 	
+	private static void launchExe(String str){
+
+		  try {
+			Process process = new ProcessBuilder(str1g+str).start();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public IniswapJ(){
 		super("Faction set solution for SMAX - version " + VERSION);
 		this.setSize(700,500);
@@ -330,14 +361,14 @@ public class IniswapJ extends JFrame {
 		ta2.setOpaque(false);
 		addcomponent(mainPanel, ta2, 2,0,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		
-		ta3 = new JTextArea(7,25);
+		ta3 = new JTextArea(7,20);
 		ta3.setBackground(new Color(250,250,250));
 		ta3.setText("1\n2\n3\n4\n5\n6\n7");
 		ta3.setEditable(false);
 		//ta3.setOpaque(false);
 		addcomponent(mainPanel, ta3, 0,1,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		
-		ta4 = new JTextArea(7,25);
+		ta4 = new JTextArea(7,20);
 		ta4.setBackground(new Color(250,250,250));
 		ta4.setText("1\n2\n3\n4\n5\n6\n7");
 		ta4.setEditable(false);
@@ -354,7 +385,12 @@ public class IniswapJ extends JFrame {
 //		      model.addElement("Element " + i);
 		
 		jl1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		addcomponent(mainPanel, jscrl, 0,2,1,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		addcomponent(mainPanel, jscrl, 0,2,1,4, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		jl1.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent lsEvent) {
+				System.out.print("First index: " + jl1.getSelectedIndex());
+			}
+		});
 
 		model1 = new DefaultListModel();
 		jl2 = new JList(model1);
@@ -366,7 +402,42 @@ public class IniswapJ extends JFrame {
 //		      model.addElement("Element " + i);
 		
 		jl2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		addcomponent(mainPanel, jscrl1, 2,2,1,4, GridBagConstraints.EAST, GridBagConstraints.NONE);
+		addcomponent(mainPanel, jscrl1, 2,2,1,4, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		
+		// adding new set
+		ta5 = new JTextArea(1,17);
+		ta5.setBackground(new Color(250,250,250));
+		ta5.setText("");
+		ta5.setEditable(true);
+		addcomponent(mainPanel, ta5, 1,2,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		
+		butAddSet = new JButton("Add existing set to the list");
+		addcomponent(mainPanel, butAddSet, 1,3,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		
+		butPlay = new JButton("Play selected set / exe");
+		butPlay.addActionListener(new ActionListener() {
+			  public void actionPerformed(ActionEvent evt) {
+				  int selected1 = jl1.getSelectedIndex();
+				  if (selected1>-1){
+					  sSet = jl1.getModel().getElementAt(selected1).toString();
+					  // exe
+					  int selected2 = jl2.getSelectedIndex();
+					  if (selected2>-1){
+						  sExe = jl2.getModel().getElementAt(selected2).toString();
+						  // LAUNCHING !!!
+						  JOptionPane.showMessageDialog(null, "LAUNCHING !!!");
+						  launchExe("terranx.exe");
+						  //Process process = new ProcessBuilder(str1.toString()+"terranx.exe").start();
+						  System.exit(0);
+					  }else{
+						  JOptionPane.showMessageDialog(null, "Please select executable file!");
+					  }
+				  }else{
+					  JOptionPane.showMessageDialog(null, "Please select faction set!");
+				  }
+			  }
+			});
+		addcomponent(mainPanel, butPlay, 1,4,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
 		
 		this.add(mainPanel);
 //		p1.add(ta1);
@@ -377,6 +448,8 @@ public class IniswapJ extends JFrame {
 		this.pack();
 		this.setVisible(true);
 		this.setResizable(false);
+
+		
 		
 	}// end of constructor public IniswapJ()
 	
