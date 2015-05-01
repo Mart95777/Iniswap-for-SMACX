@@ -388,7 +388,23 @@ public class IniswapJ extends JFrame {
 		addcomponent(mainPanel, jscrl, 0,2,1,4, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		jl1.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lsEvent) {
-				System.out.print("First index: " + jl1.getSelectedIndex());
+				if (! lsEvent.getValueIsAdjusting())
+				{
+					ArrayList<String> inifacsetX = facsets.get(jl1.getSelectedIndex()-1);
+					StringBuilder strB1 = new StringBuilder("");
+					//strB1 = "";
+					for(int j=1;j<7;++j){
+						strB1.append(inifacsetX.get(j));
+						strB1.append("\n");
+					}
+					strB1.append(inifacsetX.get(7));
+					ta4.setText(strB1.toString());
+					
+					//System.out.println("Selected: " + (jl1.getSelectedIndex()-1));
+					//ta4.setText("1x\n2\n3\n4\n5\n6\n7");
+					//System.out.println(lsEvent.getSource());
+				}
+				
 			}
 		});
 
