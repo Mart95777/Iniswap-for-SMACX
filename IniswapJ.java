@@ -41,8 +41,9 @@ public class IniswapJ extends JFrame {
 	 * ta3 - initial faction set
 	 * ta4
 	 * ta5 - new set name
+	 * ta6 - label for new set name
 	 */
-	static JTextArea ta1,ta2,ta3,ta4,ta5;
+	static JTextArea ta1,ta2,ta3,ta4,ta5,ta6;
 	static DefaultListModel model, model1;
 	static JList jl1, jl2;
 	
@@ -353,7 +354,6 @@ public class IniswapJ extends JFrame {
 		ta1.setText("Declared factions in 'ini' file:");
 		ta1.setEditable(false);
 		ta1.setOpaque(false);
-		//ta1.setSize(200, 50);
 		addcomponent(mainPanel, ta1, 0,0,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		ta2 = new JTextArea();
 		ta2.setText("Factions to insert into 'ini' file:");
@@ -374,6 +374,12 @@ public class IniswapJ extends JFrame {
 		ta4.setEditable(false);
 		//ta3.setOpaque(false);
 		addcomponent(mainPanel, ta4, 2,1,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		
+		ta6 = new JTextArea();
+		ta6.setText("Give name for the new set:");
+		ta6.setEditable(false);
+		ta6.setOpaque(false);
+		addcomponent(mainPanel, ta6, 1,2,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		
 		model = new DefaultListModel();
 		jl1 = new JList(model);
@@ -425,10 +431,58 @@ public class IniswapJ extends JFrame {
 		ta5.setBackground(new Color(250,250,250));
 		ta5.setText("");
 		ta5.setEditable(true);
-		addcomponent(mainPanel, ta5, 1,2,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		addcomponent(mainPanel, ta5, 1,3,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
 		
 		butAddSet = new JButton("Add existing set to the list");
-		addcomponent(mainPanel, butAddSet, 1,3,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		butAddSet.addActionListener(new ActionListener() {
+			  public void actionPerformed(ActionEvent evt) {
+				  /////////////////////////////
+				  String stra = ta5.getText();
+					String strb = "";
+					ArrayList<String> nextFactionSet = new ArrayList<String>();
+					nextFactionSet.add(stra);
+					//i1 = facsets.size();
+					
+					for (String temp : inifile) {
+						try {
+							stra = temp.substring(10,temp.length());
+							strb = temp.substring(0,9);
+							//System.out.println("strb: " + strb);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							continue;
+						}
+						switch (strb){
+						case "Faction 1":
+							nextFactionSet.add(stra);
+							break;
+						case "Faction 2":
+							nextFactionSet.add(stra);
+							break;
+						case "Faction 3":
+							nextFactionSet.add(stra);
+							break;
+						case "Faction 4":
+							nextFactionSet.add(stra);
+							break;
+						case "Faction 5":
+							nextFactionSet.add(stra);
+							break;
+						case "Faction 6":
+							nextFactionSet.add(stra);
+							break;
+						case "Faction 7":
+							nextFactionSet.add(stra);
+							break;
+						}
+						//System.out.println(temp);
+					}// for inifile
+					facsets.add(nextFactionSet);
+					//int k = facsets.size()-1;
+					model.addElement(facsets.get(facsets.size()-1).get(0));
+			  }
+		});
+		addcomponent(mainPanel, butAddSet, 1,4,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
 		
 		butPlay = new JButton("Play selected set / exe");
 		butPlay.addActionListener(new ActionListener() {
@@ -443,6 +497,13 @@ public class IniswapJ extends JFrame {
 						  // LAUNCHING !!!
 						  JOptionPane.showMessageDialog(null, "LAUNCHING !!!");
 						  launchExe("terranx.exe");
+						  /** Set of events during launching
+						   * 1 - saving the sets file.
+						   * 2 - saving new ini file
+						   */
+						  
+						  
+						  
 						  //Process process = new ProcessBuilder(str1.toString()+"terranx.exe").start();
 						  System.exit(0);
 					  }else{
@@ -453,7 +514,7 @@ public class IniswapJ extends JFrame {
 				  }
 			  }
 			});
-		addcomponent(mainPanel, butPlay, 1,4,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		addcomponent(mainPanel, butPlay, 1,5,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
 		
 		this.add(mainPanel);
 //		p1.add(ta1);
