@@ -59,7 +59,12 @@ public class IniswapJ extends JFrame {
 	static ArrayList<String> inifile = new ArrayList<String>();
 	static ArrayList<String> inifacset = new ArrayList<String>();
 	static ArrayList<ArrayList<String>> facsets = new ArrayList<ArrayList<String>>();
-	static File[] exes;
+	/**
+	 * exesFiles - takes all files from the folder
+	 * exes - lists only executables, which is index of exesFiles
+	 */
+	static File[] exesFiles;
+	static ArrayList<Integer> exes = new ArrayList<Integer>();
 	
 	static Path dir1;
 	static File dir2,file1,file2;
@@ -79,6 +84,7 @@ public class IniswapJ extends JFrame {
 		//test
 		//JOptionPane.showMessageDialog(null, "Test");
 		Path path;
+		StringBuilder str2 = new StringBuilder();
 		try {
 			path = Paths.get(IniswapJ.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 			//JOptionPane.showMessageDialog(null, "path: "+path.toString());
@@ -102,11 +108,37 @@ public class IniswapJ extends JFrame {
 			//JOptionPane.showMessageDialog(null, "str1g-2: "+str1g);
 			// list of exe
 			try {
-				exes = new File(str1.toString()).listFiles();
+				exesFiles = new File(str1.toString()).listFiles();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			// checking executables
+			int j;
+			int k = 0;
+			for (File temp : exesFiles){
+				str2.setLength(0);
+				//System.out.println("exesFiles: " + temp.toString());
+				j = temp.toString().length();
+				//System.out.println("j: " + j);
+				c = ' ';
+				while (c != '\\' && j >0){
+					j--;
+					//System.out.println("j = " + j);
+					c = temp.toString().charAt(j);
+				}
+				//temp.toString().substring(j, temp.toString().length()-1);
+				str2.append(temp.toString().substring(j+1, temp.toString().length()));
+				//System.out.println("exes: " + str2.toString());
+				if(str2.toString().substring(str2.length()-3, str2.length()).endsWith("exe")){
+					exes.add(k);
+					//jl2.addListSelectionListener(arg0);
+					model1.addElement(str2.toString());
+				}
+				k++;
+				//System.out.println("exes: " + str2.toString());
+			};
+				
 			
 			
 			// Alpha Centauri.ini
@@ -319,9 +351,10 @@ public class IniswapJ extends JFrame {
 		//jl1.setVisibleRowCount(8);
 		
 		// the right list of exe
-		for (File temp : exes ){
-			model1.addElement(temp.toString());
-		}
+		// ... done in checknewinstall
+//		for (File temp : exes ){
+//			model1.addElement(temp.toString());
+//		}
 
 
 		
@@ -493,10 +526,18 @@ public class IniswapJ extends JFrame {
 					  // exe
 					  int selected2 = jl2.getSelectedIndex();
 					  if (selected2>-1){
-						  sExe = jl2.getModel().getElementAt(selected2).toString();
+						  //sExe = exesFiles[jl2.getModel().getElementAt(selected2)].toString();
+						  int m = jl2.getSelectedIndex();
+						  JOptionPane.showMessageDialog(null, "m: " + m);
+						  JOptionPane.showMessageDialog(null, "get m: " + exes.get(m) );
+						  m = exes.get(m);
+						  sExe = exesFiles[m].toString();
+						  JOptionPane.showMessageDialog(null, sExe);
 						  // LAUNCHING !!!
-						  JOptionPane.showMessageDialog(null, "LAUNCHING !!!");
-						  launchExe("terranx.exe");
+						  JOptionPane.showMessageDialog(null, "LAUNCHING !!!" + " " + sExe);
+						  
+						  
+						  //launchExe("terranx.exe");
 						  /** Set of events during launching
 						   * 1 - saving the sets file.
 						   * 2 - saving new ini file
