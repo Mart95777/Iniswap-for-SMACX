@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 //import java.io.File;
 //import java.io.IOException;
@@ -64,7 +66,7 @@ public class IniswapJ extends JFrame {
 	 * exes - lists only executables, which is index of exesFiles
 	 */
 	static File[] exesFiles;
-	static ArrayList<Integer> exes = new ArrayList<Integer>();
+	//static ArrayList<Integer> exes = new ArrayList<Integer>();
 	
 	static Path dir1;
 	static File dir2,file1,file2;
@@ -72,6 +74,7 @@ public class IniswapJ extends JFrame {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		IniswapJ frame = new IniswapJ();
+		//JOptionPane.showMessageDialog(null, "after constructor");
 		checknewinstal();
 		readini();
 		filldata();
@@ -81,95 +84,61 @@ public class IniswapJ extends JFrame {
 	}// end of main
 	
 	private static void checknewinstal(){
-		//test
-		//JOptionPane.showMessageDialog(null, "Test");
-		Path path;
+		//Getting path to folder
+		StringBuilder str1 = new StringBuilder();
 		StringBuilder str2 = new StringBuilder();
+		str1.append(new File(".").getAbsolutePath());
+		File runningFolder = null;
+		runningFolder = new File(str1.toString()).getParentFile();
+					
+		str2.setLength(0);
+		str2.append(runningFolder.toString());
+		str2.append('\\');
+			
+		str1g = str2.toString();
+		//str1g now holds string to the jar file folder
+		// list of exe files. They also need to start with terranx
 		try {
-			path = Paths.get(IniswapJ.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-			//JOptionPane.showMessageDialog(null, "path: "+path.toString());
-			StringBuilder str1 = new StringBuilder(path.toString());
-			// find path
-			
-			if (new File(str1.toString()).isDirectory() == false){
-				int i = str1.length()-1;
-				char c = str1.charAt(i);
-				while (c != '\\' && str1.length() >0){
-					str1.deleteCharAt(i);
-					i--;
-					c = str1.charAt(i);
-				}
-			}
-			//JOptionPane.showMessageDialog(null, "str1-1: "+str1.toString());
-			int i = str1.length()-1;
-			char c = str1.charAt(i);
-			if(c != '\\') str1.append("\\");
-			str1g = str1.toString();
-			//JOptionPane.showMessageDialog(null, "str1g-2: "+str1g);
-			// list of exe
-			try {
-				exesFiles = new File(str1.toString()).listFiles();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			// checking executables
-			int j;
-			int k = 0;
-			for (File temp : exesFiles){
-				str2.setLength(0);
-				//System.out.println("exesFiles: " + temp.toString());
-				j = temp.toString().length();
-				//System.out.println("j: " + j);
-				c = ' ';
-				while (c != '\\' && j >0){
-					j--;
-					//System.out.println("j = " + j);
-					c = temp.toString().charAt(j);
-				}
-				//temp.toString().substring(j, temp.toString().length()-1);
-				str2.append(temp.toString().substring(j+1, temp.toString().length()));
-				//System.out.println("exes: " + str2.toString());
-				if(str2.toString().substring(str2.length()-3, str2.length()).endsWith("exe")){
-					exes.add(k);
-					//jl2.addListSelectionListener(arg0);
-					model1.addElement(str2.toString());
-				}
-				k++;
-				//System.out.println("exes: " + str2.toString());
-			};
-				
-			
-			
-			// Alpha Centauri.ini
-			file1 = new File (str1.toString(),"Alpha Centauri.ini");
-			if(file1.length()==0){
-				JOptionPane.showMessageDialog(null, 
-						"Alpha Centauri.ini file does not exist, or is zero length."
-						+"\nIs jar file in the game folder?"
-						+"\nCheck SMACX installation or start the game to create ini file."
-						+"\nQuiting...");
-				System.exit(0);
-			}
-			dir2 = new File(str1.toString(), "Iniswap3");
-			dir2.mkdir();
-			file2 = new File (dir2,"ini_factions_sets.txt");
-//			if(file2.length()==0)
-//				JOptionPane.showMessageDialog(null, "ini_factions_sets.txt = 0?");
-			try {
-				file2.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		} 
-		catch (URISyntaxException e1) {
+			exesFiles = new File(str1g).listFiles();
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, "Problem with listing exe files");
 			e1.printStackTrace();
 		}
-				
+		// checking executables
+		int j;
+		char c;
+		//int k = 0;
+		for (File temp : exesFiles){
+			str1.setLength(0);
+			str1.append(temp.getName().toString());
+			if(str1.toString().length()>0 && str1.toString().endsWith("exe") && str1.toString().startsWith("terranx")){
+				model1.addElement(str1.toString());
+			}
+		};
+		
+		// Alpha Centauri.ini
+		file1 = new File (str1g,"Alpha Centauri.ini");
+		if(file1.length()==0){
+			JOptionPane.showMessageDialog(null, 
+					"Alpha Centauri.ini file does not exist, or is zero length."
+					+"\nIs jar file in the game folder?"
+					+"\nCheck SMACX installation or start the game to create ini file."
+					+"\nQuiting...");
+			System.exit(0);
+		}
+		dir2 = new File(str1g, "Iniswap3");
+		dir2.mkdir();
+		file2 = new File (dir2,"ini_factions_sets.txt");
+//			if(file2.length()==0)
+//				JOptionPane.showMessageDialog(null, "ini_factions_sets.txt = 0?");
+		try {
+			file2.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
 		if (file2.length()==0){
 			try{
 			PrintWriter out1
@@ -200,11 +169,10 @@ public class IniswapJ extends JFrame {
 			}
 			
 		}
+		JOptionPane.showMessageDialog(null, "end of checknewinstal");
 		
 	}//end of private checknewinstal()
-	
-	 
-	 
+
 	private static void readini(){
 		try {
 			BufferedReader in1 = new BufferedReader(new FileReader(file2));
@@ -236,9 +204,9 @@ public class IniswapJ extends JFrame {
 		    }
 		}
 		// show lines in arraylist - TESTING !!!!!!!!!!!!!!
-//		for (String temp : inifacset) {
-//			System.out.println(temp);
-//		}
+		for (String temp : inifacset) {
+			System.out.println(temp);
+		}
 		// 
 		
 		try {   
@@ -342,14 +310,14 @@ public class IniswapJ extends JFrame {
 			i1++;
 			
 		}//while
-			
+		JOptionPane.showMessageDialog(null, "end of while loop");
 		// List box with faction sets
 		// actual faction sets 
 		for (int k=0;k<facsets.size();k++){
 			model.addElement(facsets.get(k).get(0));
 		}
 		//jl1.setVisibleRowCount(8);
-		
+		JOptionPane.showMessageDialog(null, "model - elements");
 		// the right list of exe
 		// ... done in checknewinstall
 //		for (File temp : exes ){
@@ -526,18 +494,19 @@ public class IniswapJ extends JFrame {
 					  // exe
 					  int selected2 = jl2.getSelectedIndex();
 					  if (selected2>-1){
-						  //sExe = exesFiles[jl2.getModel().getElementAt(selected2)].toString();
-						  int m = jl2.getSelectedIndex();
-						  JOptionPane.showMessageDialog(null, "m: " + m);
-						  JOptionPane.showMessageDialog(null, "get m: " + exes.get(m) );
-						  m = exes.get(m);
-						  sExe = exesFiles[m].toString();
+						  sExe = jl2.getModel().getElementAt(selected2).toString();
+						  //int m = jl2.getSelectedIndex();
+						  //JOptionPane.showMessageDialog(null, "m: " + m);
+						  //JOptionPane.showMessageDialog(null, "get m: " + exes.get(m) );
+						  //m = exes.get(m);
+						  //sExe = exesFiles[m].toString();
 						  JOptionPane.showMessageDialog(null, sExe);
 						  // LAUNCHING !!!
 						  JOptionPane.showMessageDialog(null, "LAUNCHING !!!" + " " + sExe);
 						  
 						  
 						  //launchExe("terranx.exe");
+						  launchExe(sExe);
 						  /** Set of events during launching
 						   * 1 - saving the sets file.
 						   * 2 - saving new ini file
