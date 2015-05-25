@@ -40,8 +40,10 @@ public class IniswapJ extends JFrame {
 	
 	/**
 	 * Text areas
+	 * ta1 - 
+	 * ta2 - 
 	 * ta3 - initial faction set
-	 * ta4
+	 * ta4 - 
 	 * ta5 - new set name
 	 * ta6 - label for new set name
 	 */
@@ -69,6 +71,9 @@ public class IniswapJ extends JFrame {
 	//static ArrayList<Integer> exes = new ArrayList<Integer>();
 	
 	static Path dir1;
+	// dir 2 - 
+	// file1 - 
+	// file2 - ini_factions_sets.txt file
 	static File dir2,file1,file2;
 
 	public static void main(String[] args) {
@@ -84,6 +89,16 @@ public class IniswapJ extends JFrame {
 	}// end of main
 	
 	private static void checknewinstal(){
+		/**
+		 * This method is intended to make all necessary settings when used in the game folder
+		 * It performs the following tasks:
+		 * 1) gets the folder in which the jar is started
+		 * 2) lists exe files, inserted to the executables list
+		 * 3) checks for existence of Alpha Centauri.ini
+		 * 4) checks for Iniswap3 folder
+		 * 5) checks for ini_factions_sets.txt
+		 * 6) if the file in (5) is not existing, creates the default one.
+		 */
 		//Getting path to folder
 		StringBuilder str1 = new StringBuilder();
 		StringBuilder str2 = new StringBuilder();
@@ -127,15 +142,15 @@ public class IniswapJ extends JFrame {
 					+"\nQuiting...");
 			System.exit(0);
 		}
+		// Iniswap3 folder
 		dir2 = new File(str1g, "Iniswap3");
 		dir2.mkdir();
 		file2 = new File (dir2,"ini_factions_sets.txt");
-//			if(file2.length()==0)
-//				JOptionPane.showMessageDialog(null, "ini_factions_sets.txt = 0?");
 		try {
 			file2.createNewFile();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, "Problem with checking existence of ini_factions_sets.txt file");
 			e.printStackTrace();
 		}
 			
@@ -165,15 +180,21 @@ public class IniswapJ extends JFrame {
 			out1.println("USURPER");
 			out1.close();
 			}catch(IOException e) {
+				JOptionPane.showMessageDialog(null, "Problem with setting ini_factions_sets.txt file");
 				e.printStackTrace();
-			}
-			
+			}	
 		}
-		JOptionPane.showMessageDialog(null, "end of checknewinstal");
 		
 	}//end of private checknewinstal()
 
 	private static void readini(){
+		/**
+		 * This method:
+		 * 1) opens ini_factions_sets.txt file (file2)
+		 * 2) loads lines to inifacset ArrayList
+		 * 3) opens Alpha Centauri.ini file
+		 * 4) loads lines to inifile ArrayList
+		 */
 		try {
 			BufferedReader in1 = new BufferedReader(new FileReader(file2));
 		} catch (FileNotFoundException e) {
@@ -238,7 +259,11 @@ public class IniswapJ extends JFrame {
 	}
 	
 	private static void filldata(){
-		//
+		/**
+		 * This method:
+		 * 1) Inserts the factions from current ini file to ta3
+		 * 2) 
+		 */
 		String strb = "";
 		
 		ta3.setText("");
@@ -310,14 +335,14 @@ public class IniswapJ extends JFrame {
 			i1++;
 			
 		}//while
-		JOptionPane.showMessageDialog(null, "end of while loop");
+		//JOptionPane.showMessageDialog(null, "end of while loop");
 		// List box with faction sets
 		// actual faction sets 
 		for (int k=0;k<facsets.size();k++){
 			model.addElement(facsets.get(k).get(0));
 		}
 		//jl1.setVisibleRowCount(8);
-		JOptionPane.showMessageDialog(null, "model - elements");
+		//JOptionPane.showMessageDialog(null, "model - elements");
 		// the right list of exe
 		// ... done in checknewinstall
 //		for (File temp : exes ){
@@ -336,6 +361,25 @@ public class IniswapJ extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private static void saveFactionSets(){
+		try{
+			PrintWriter out1
+			   = new PrintWriter(new BufferedWriter(new FileWriter(file2)));
+			// writing first lines
+			out1.println("Iniswap faction sets");
+			for (ArrayList<String> temp : facsets){
+				out1.println(STARS_IN_INI);
+				for (String temp1 : temp){
+					out1.println(temp1);
+				}
+			}
+			out1.close();
+			}catch(IOException e) {
+				JOptionPane.showMessageDialog(null, "Problem with setting ini_factions_sets.txt file");
+				e.printStackTrace();
+			}	
 	}
 	
 	public IniswapJ(){
@@ -495,6 +539,14 @@ public class IniswapJ extends JFrame {
 					  int selected2 = jl2.getSelectedIndex();
 					  if (selected2>-1){
 						  sExe = jl2.getModel().getElementAt(selected2).toString();
+						  
+						  /** Set of events during launching
+						   * 1 - saving the sets file.
+						   * 2 - saving new ini file
+						   */
+						  saveFactionSets();
+						  
+						  
 						  //int m = jl2.getSelectedIndex();
 						  //JOptionPane.showMessageDialog(null, "m: " + m);
 						  //JOptionPane.showMessageDialog(null, "get m: " + exes.get(m) );
@@ -507,10 +559,7 @@ public class IniswapJ extends JFrame {
 						  
 						  //launchExe("terranx.exe");
 						  launchExe(sExe);
-						  /** Set of events during launching
-						   * 1 - saving the sets file.
-						   * 2 - saving new ini file
-						   */
+						  
 						  
 						  
 						  
