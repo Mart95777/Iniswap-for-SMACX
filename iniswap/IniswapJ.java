@@ -27,11 +27,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Path;
-//import java.io.File;
-//import java.io.IOException;
-//import java.io.PrintWriter;
-//import java.io.Writer;
 import java.nio.file.Paths;
+
 
 
 
@@ -134,6 +131,10 @@ public class IniswapJ extends JFrame {
 			str1.append(temp.getName().toString());
 			if(str1.toString().length()>0 && str1.toString().endsWith("exe") && str1.toString().startsWith("terranx")){
 				model1.addElement(str1.toString());
+			}
+			// check if there is only one element, if so, make it selected
+			if(model1.length()==1){
+				
 			}
 		};
 		
