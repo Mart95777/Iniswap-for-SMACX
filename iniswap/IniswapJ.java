@@ -1,3 +1,5 @@
+package iniswap;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -63,6 +65,7 @@ public class IniswapJ extends JFrame {
 	static ArrayList<String> inifile = new ArrayList<String>();
 	static ArrayList<String> inifacset = new ArrayList<String>();
 	static ArrayList<ArrayList<String>> facsets = new ArrayList<ArrayList<String>>();
+	static ArrayList<String> inifacsetX = new ArrayList<String>();
 	/**
 	 * exesFiles - takes all files from the folder
 	 * exes - lists only executables, which is index of exesFiles
@@ -71,9 +74,11 @@ public class IniswapJ extends JFrame {
 	//static ArrayList<Integer> exes = new ArrayList<Integer>();
 	
 	static Path dir1;
-	// dir 2 - 
-	// file1 - 
-	// file2 - ini_factions_sets.txt file
+	/**
+	 dir 2 - 
+	 file1 - Alpha Centauri.ini
+	 file2 - ini_factions_sets.txt file
+	 */
 	static File dir2,file1,file2;
 
 	public static void main(String[] args) {
@@ -382,6 +387,58 @@ public class IniswapJ extends JFrame {
 			}	
 	}
 	
+	private static void replaceFactionSet(){
+		String strb = "";
+		for (int i = 0; i < inifile.size(); ++i) {
+			try {
+				if (inifile.get(i).length()>9){
+				strb = inifile.get(i).substring(0,9);
+				}
+				//JOptionPane.showMessageDialog(null, "strb: " + strb);
+				//System.out.println("strb: " + strb);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Problem with reading a line in ArrayList of Alpha Centauri ini file");
+				continue;
+			}
+			switch (strb){
+			case "Faction 1":
+				inifile.set(i,"Faction 1="+inifacsetX.get(1));
+				break;
+			case "Faction 2":
+				inifile.set(i,"Faction 2="+inifacsetX.get(2));
+				break;
+			case "Faction 3":
+				inifile.set(i,"Faction 3="+inifacsetX.get(3));
+				break;
+			case "Faction 4":
+				inifile.set(i,"Faction 4="+inifacsetX.get(4));
+				break;
+			case "Faction 5":
+				inifile.set(i,"Faction 5="+inifacsetX.get(5));
+				break;
+			case "Faction 6":
+				inifile.set(i,"Faction 6="+inifacsetX.get(6));
+				break;
+			case "Faction 7":
+				inifile.set(i,"Faction 7="+inifacsetX.get(7));
+				break;
+			}
+		}
+	}
+	
+	private static void saveAlphaCenIni(){
+		try{
+			PrintWriter out1 = new PrintWriter(new BufferedWriter(new FileWriter(file1)));
+			for (int i = 0; i < inifile.size(); ++i){
+				out1.println(inifile.get(i));
+			}
+			out1.close();
+			}catch(IOException e) {
+				JOptionPane.showMessageDialog(null, "Problem with saving Alpha Centauri.ini file");
+				e.printStackTrace();
+			}	
+	}
+	
 	public IniswapJ(){
 		super("Faction set solution for SMAX - version " + VERSION);
 		this.setSize(700,500);
@@ -441,7 +498,7 @@ public class IniswapJ extends JFrame {
 			public void valueChanged(ListSelectionEvent lsEvent) {
 				if (! lsEvent.getValueIsAdjusting())
 				{
-					ArrayList<String> inifacsetX = facsets.get(jl1.getSelectedIndex()-1);
+					inifacsetX = facsets.get(jl1.getSelectedIndex()-1);
 					StringBuilder strB1 = new StringBuilder("");
 					//strB1 = "";
 					for(int j=1;j<7;++j){
@@ -545,7 +602,8 @@ public class IniswapJ extends JFrame {
 						   * 2 - saving new ini file
 						   */
 						  saveFactionSets();
-						  
+						  replaceFactionSet();
+						  saveAlphaCenIni();
 						  
 						  //int m = jl2.getSelectedIndex();
 						  //JOptionPane.showMessageDialog(null, "m: " + m);
