@@ -132,12 +132,12 @@ public class IniswapJ extends JFrame {
 			if(str1.toString().length()>0 && str1.toString().endsWith("exe") && str1.toString().startsWith("terranx")){
 				model1.addElement(str1.toString());
 			}
-			// check if there is only one element, if so, make it selected
-			if(model1.length()==1){
-				
-			}
 		};
-		
+		// check if there is only one element, if so, make it selected
+		if(model1.getSize()==1){
+			//JOptionPane.showMessageDialog(null, "selecting...");
+			jl2.setSelectedIndex(0);
+		}
 		// Alpha Centauri.ini
 		file1 = new File (str1g,"Alpha Centauri.ini");
 		if(file1.length()==0){
@@ -360,7 +360,6 @@ public class IniswapJ extends JFrame {
 	}// end of private static void filldata()
 	
 	private static void launchExe(String str){
-
 		  try {
 			Process process = new ProcessBuilder(str1g+str).start();
 		} catch (IOException e) {
@@ -521,13 +520,21 @@ public class IniswapJ extends JFrame {
 		jl2 = new JList(model1);
 		JScrollPane jscrl1 = new JScrollPane(jl2);
 		jscrl1.setPreferredSize(new Dimension(200,120));
-		model1.addElement(null);
+		//model1.addElement(null);
 		// test 15 elements
 //		for (int i = 0; i < 15; i++)
 //		      model.addElement("Element " + i);
 		
 		jl2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		addcomponent(mainPanel, jscrl1, 2,2,1,4, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		jl2.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent lsEvent) {
+				if (! lsEvent.getValueIsAdjusting())
+				{
+					//JOptionPane.showMessageDialog(null, "Listener ===> !!!");
+				}
+			}
+		});
 		
 		// adding new set
 		ta5 = new JTextArea(1,17);
@@ -605,24 +612,7 @@ public class IniswapJ extends JFrame {
 						  saveFactionSets();
 						  replaceFactionSet();
 						  saveAlphaCenIni();
-						  
-						  //int m = jl2.getSelectedIndex();
-						  //JOptionPane.showMessageDialog(null, "m: " + m);
-						  //JOptionPane.showMessageDialog(null, "get m: " + exes.get(m) );
-						  //m = exes.get(m);
-						  //sExe = exesFiles[m].toString();
-						  JOptionPane.showMessageDialog(null, sExe);
-						  // LAUNCHING !!!
-						  JOptionPane.showMessageDialog(null, "LAUNCHING !!!" + " " + sExe);
-						  
-						  
-						  //launchExe("terranx.exe");
 						  launchExe(sExe);
-						  
-						  
-						  
-						  
-						  //Process process = new ProcessBuilder(str1.toString()+"terranx.exe").start();
 						  System.exit(0);
 					  }else{
 						  JOptionPane.showMessageDialog(null, "Please select executable file!");
