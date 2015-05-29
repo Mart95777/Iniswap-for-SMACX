@@ -20,6 +20,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.*;
+import java.awt.image.*;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.io.*;
 import java.net.URI;
@@ -47,10 +49,11 @@ public class IniswapJ extends JFrame {
 	 * ta6 - label for new set name
 	 */
 	static JTextArea ta1,ta2,ta3,ta4,ta5,ta6;
-	static DefaultListModel model, model1;
+	static DefaultListModel model, model1, model2;
 	static JList jl1, jl2;
 	
 	static JButton butAddSet;
+	static JButton butRemoveSet;
 	static JButton butPlay;
 	
 	// strings for launching
@@ -81,6 +84,7 @@ public class IniswapJ extends JFrame {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		IniswapJ frame = new IniswapJ();
+
 		//JOptionPane.showMessageDialog(null, "after constructor");
 		checknewinstal();
 		readini();
@@ -231,9 +235,9 @@ public class IniswapJ extends JFrame {
 		    }
 		}
 		// show lines in arraylist - TESTING !!!!!!!!!!!!!!
-		for (String temp : inifacset) {
-			System.out.println(temp);
-		}
+//		for (String temp : inifacset) {
+//			System.out.println(temp);
+//		}
 		// 
 		
 		try {   
@@ -484,21 +488,22 @@ public class IniswapJ extends JFrame {
 		addcomponent(mainPanel, ta6, 1,2,2,1, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		
 		model = new DefaultListModel();
-		jl1 = new JList(model);
+		jl1 = new JList();
+		jl1.setModel(model);
 		JScrollPane jscrl = new JScrollPane(jl1);
 		jscrl.setPreferredSize(new Dimension(200,120));
-		model.addElement(null);
+		//model.addElement(null);
 		// test 15 elements
 //		for (int i = 0; i < 15; i++)
 //		      model.addElement("Element " + i);
 		
 		jl1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		addcomponent(mainPanel, jscrl, 0,2,1,4, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		addcomponent(mainPanel, jscrl, 0,2,1,6, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		jl1.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lsEvent) {
 				if (! lsEvent.getValueIsAdjusting())
 				{
-					inifacsetX = facsets.get(jl1.getSelectedIndex()-1);
+					inifacsetX = facsets.get(jl1.getSelectedIndex());
 					StringBuilder strB1 = new StringBuilder("");
 					//strB1 = "";
 					for(int j=1;j<7;++j){
@@ -508,7 +513,8 @@ public class IniswapJ extends JFrame {
 					strB1.append(inifacsetX.get(7));
 					ta4.setText(strB1.toString());
 					
-					//System.out.println("Selected: " + (jl1.getSelectedIndex()-1));
+					//JOptionPane.showMessageDialog(null, "(jl1)Selected index: " + (jl1.getSelectedIndex()));
+					//System.out.println("Selected: " + (jl1.getSelectedIndex()));
 					//ta4.setText("1x\n2\n3\n4\n5\n6\n7");
 					//System.out.println(lsEvent.getSource());
 				}
@@ -526,7 +532,7 @@ public class IniswapJ extends JFrame {
 //		      model.addElement("Element " + i);
 		
 		jl2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		addcomponent(mainPanel, jscrl1, 2,2,1,4, GridBagConstraints.WEST, GridBagConstraints.NONE);
+		addcomponent(mainPanel, jscrl1, 2,2,1,6, GridBagConstraints.WEST, GridBagConstraints.NONE);
 		jl2.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lsEvent) {
 				if (! lsEvent.getValueIsAdjusting())
@@ -590,11 +596,35 @@ public class IniswapJ extends JFrame {
 					facsets.add(nextFactionSet);
 					//int k = facsets.size()-1;
 					model.addElement(facsets.get(facsets.size()-1).get(0));
-			  }
+			  } 
 		});
 		addcomponent(mainPanel, butAddSet, 1,4,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
 		
-		butPlay = new JButton("Play selected set / exe");
+		butRemoveSet = new JButton("Remove selected set from the list");
+		butRemoveSet.addActionListener(new ActionListener() {
+			  public void actionPerformed(ActionEvent evt) {
+				  int selected1 = -1;
+				  selected1 = jl1.getSelectedIndex();
+				  if (model.getSize()>selected1){
+					  facsets.remove(selected1);
+				  }
+				  //and what with model?		  
+				  model = new DefaultListModel();			  
+				  for (int k=0;k<facsets.size();k++){
+						model.addElement(facsets.get(k).get(0));
+					}
+				  try {
+					jl1.setModel(model);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						//JOptionPane.showMessageDialog(null, "Yet again this exception... ");
+						//e.printStackTrace();
+					}
+			  } 
+		});
+		addcomponent(mainPanel, butRemoveSet, 1,5,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		
+		butPlay = new JButton("<html><center>PLAY</center>selected set and exe</html>");
 		butPlay.addActionListener(new ActionListener() {
 			  public void actionPerformed(ActionEvent evt) {
 				  int selected1 = jl1.getSelectedIndex();
@@ -622,7 +652,7 @@ public class IniswapJ extends JFrame {
 				  }
 			  }
 			});
-		addcomponent(mainPanel, butPlay, 1,5,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
+		addcomponent(mainPanel, butPlay, 1,6,1,1, GridBagConstraints.NORTH, GridBagConstraints.NONE);
 		
 		this.add(mainPanel);
 //		p1.add(ta1);
@@ -633,6 +663,7 @@ public class IniswapJ extends JFrame {
 		this.pack();
 		this.setVisible(true);
 		this.setResizable(false);
+		
 
 		
 		
